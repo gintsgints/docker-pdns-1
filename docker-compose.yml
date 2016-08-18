@@ -1,5 +1,5 @@
 pdns:
-  build: . 
+  build: .
   #image: secns/pdns
   links:
   - "mysql:db"
@@ -12,6 +12,7 @@ pdns:
   - PDNS_DISTRIBUTOR_THREADS=3
   - PDNS_CACHE_TTL=20
   - PDNS_RECURSIVE_CACHE_TTL=10
+  - PDNS_API_KEY=eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ3MTUyNjU0MSwiaW
 mysql:
   image: mysql
   environment:
