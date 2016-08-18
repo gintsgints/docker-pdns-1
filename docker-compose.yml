@@ -1,5 +1,6 @@
 pdns:
-  build: .
+  build: . 
+  #image: secns/pdns
   links:
   - "mysql:db"
   ports:

@@ -1,23 +1,30 @@
 FROM ubuntu:trusty
 MAINTAINER Patrick Oberdorf <patrick@oberdorf.net>
 
-ENV VERSION 3.4.9-1
+COPY assets/apt/preferences.d/pdns /etc/apt/preferences.d/pdns
+RUN apt-get update && apt-get install -y curl \
+	&& curl https://repo.powerdns.com/FD380FBB-pub.asc | sudo apt-key add - \
+	&& echo "deb [arch=amd64] http://repo.powerdns.com/ubuntu trusty-auth-40 main" > /etc/apt/sources.list.d/pdns.list
+
 
 RUN apt-get update && apt-get install -y \
-  wget \
-  git \
-  supervisor \
-  mysql-client \
-  nginx \
-  php5-fpm \
-  php5-mcrypt \
-  php5-mysqlnd \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+	wget \
+	git \
+	supervisor \
+	mysql-client \
+	nginx \
+	php5-fpm \
+	php5-mcrypt \
+	php5-mysqlnd \
+	pdns-server \
+	pdns-backend-mysql \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ### PDNS ###
-RUN cd /tmp && wget https://downloads.powerdns.com/releases/deb/pdns-static_${VERSION}_amd64.deb && dpkg -i pdns-static_${VERSION}_amd64.deb && rm pdns-static_${VERSION}_amd64.deb
-RUN useradd --system pdns
+
+#RUN cd /tmp && wget https://downloads.powerdns.com/releases/deb/pdns-static_${VERSION}_amd64.deb && dpkg -i pdns-static_${VERSION}_amd64.deb && rm pdns-static_${VERSION}_amd64.deb
+#RUN useradd --system pdns
 
 COPY assets/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY assets/nginx/vhost.conf /etc/nginx/sites-enabled/vhost.conf
@@ -34,14 +41,15 @@ COPY assets/mysql/pdns.sql /pdns.sql
 RUN rm /etc/nginx/sites-enabled/default
 RUN php5enmod mcrypt
 RUN mkdir -p /var/www/html/ \
-  && cd /var/www/html \
-  && git clone https://github.com/poweradmin/poweradmin.git . \
-  && git checkout 95017a780d71805ee647eb732c4c2e9fbbe9e6c1 \
-  && rm -R /var/www/html/install
+	&& cd /var/www/html \
+	&& git clone https://github.com/wociscz/poweradmin.git . \
+	&& git checkout 98ecbb5692d4f9bc42110ec478be63eb5651c6de \
+	&& rm -R /var/www/html/install
 
 COPY assets/poweradmin/config.inc.php /var/www/html/inc/config.inc.php
 COPY assets/mysql/poweradmin.sql /poweradmin.sql
-RUN chown -R www-data:www-data /var/www/html/
+RUN chown -R www-data:www-data /var/www/html/ \
+	&& chmod 644 /etc/powerdns/pdns.d/pdns.*
 
 ### SUPERVISOR ###
 COPY assets/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
