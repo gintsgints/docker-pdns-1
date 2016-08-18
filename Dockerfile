@@ -4,16 +4,16 @@ MAINTAINER Patrick Oberdorf <patrick@oberdorf.net>
 ENV VERSION 3.4.9-1
 
 RUN apt-get update && apt-get install -y \
-	wget \
-	git \
-	supervisor \
-	mysql-client \
-	nginx \
-	php5-fpm \
-	php5-mcrypt \
-	php5-mysqlnd \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  wget \
+  git \
+  supervisor \
+  mysql-client \
+  nginx \
+  php5-fpm \
+  php5-mcrypt \
+  php5-mysqlnd \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 ### PDNS ###
 RUN cd /tmp && wget https://downloads.powerdns.com/releases/deb/pdns-static_${VERSION}_amd64.deb && dpkg -i pdns-static_${VERSION}_amd64.deb && rm pdns-static_${VERSION}_amd64.deb
@@ -34,10 +34,10 @@ COPY assets/mysql/pdns.sql /pdns.sql
 RUN rm /etc/nginx/sites-enabled/default
 RUN php5enmod mcrypt
 RUN mkdir -p /var/www/html/ \
-	&& cd /var/www/html \
-	&& git clone https://github.com/poweradmin/poweradmin.git . \
-	&& git checkout 95017a780d71805ee647eb732c4c2e9fbbe9e6c1 \
-	&& rm -R /var/www/html/install
+  && cd /var/www/html \
+  && git clone https://github.com/poweradmin/poweradmin.git . \
+  && git checkout 95017a780d71805ee647eb732c4c2e9fbbe9e6c1 \
+  && rm -R /var/www/html/install
 
 COPY assets/poweradmin/config.inc.php /var/www/html/inc/config.inc.php
 COPY assets/mysql/poweradmin.sql /poweradmin.sql
@@ -47,6 +47,7 @@ RUN chown -R www-data:www-data /var/www/html/
 COPY assets/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY start.sh /start.sh
 
+EXPOSE 8084
 EXPOSE 53 8083
 EXPOSE 53/udp
 
