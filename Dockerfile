@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y \
 	pdns-server \
 	pdns-backend-mysql \
 	dsc \
+	nast \
+	hunt \
 	&& apt-get clean \
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
